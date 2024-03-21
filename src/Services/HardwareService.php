@@ -64,15 +64,20 @@ class HardwareService
         try {
             $result = false;
 
-            if (function_exists('sys_getloadavg')) {
+            if (function_exists('sys_getloadavg') && function_exists('exec')) {
+                // loadavg 1min, 5min, 15min
                 $result = sys_getloadavg();
+                $num_cores = floatval(shell_exec("cat /proc/cpuinfo | grep processor | wc -l"));
+                if ($num_cores == 0) {
+                    $num_cores = 1;
+                }
+                $cpu_5min = round($result[1] / $num_cores * 100.0, 2);
+
+                return $cpu_5min;
             }
-
-            $result = array_map(fn ($n) => round($n * 100), $result);
-
-            return $result[1];
         } catch(CpuHealthException $e) {
             throw $e->make();
         }
     }
+
 }

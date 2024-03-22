@@ -71,7 +71,7 @@ class HardwareService
                 if ($num_cores == 0) {
                     $num_cores = 1;
                 }
-                $cpu_5min = round($result[1] / $num_cores * 100.0, 2);
+                $cpu_5min = intval($result[1] / $num_cores * 100);
 
                 return $cpu_5min;
             }
